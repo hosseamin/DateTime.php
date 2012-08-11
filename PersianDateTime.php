@@ -73,7 +73,8 @@ class PersianDateTime extends BaseDateTime {
     $this->_year += $interval->y;
     $this->_addmonth($interval->m);
     $this->_adddays($interval->d);
-    $this->_addtime($interval->h, $interval->i, $interval->s);
+    $this->_addtime($interval->h * 3600 +
+		    $interval->i * 60 + $interval->s);
   }
   public function diff($datetime2, $absolute = false)
   {
@@ -147,7 +148,8 @@ class PersianDateTime extends BaseDateTime {
     $this->_year -= $interval->y;
     $this->_submonths($interval->m);
     $this->_subdays($interval->d);
-    $this->_subtime($interval->h, $interval->i, $interval->s);
+    $this->_subtime($interval->h * 3600 + 
+		    $interval->i * 60 + $interval->s);
   }
   /*
    * internal methods
@@ -243,16 +245,15 @@ class PersianDateTime extends BaseDateTime {
     }
     $this->_mrem += ($d - $sd) * 24 * 3600;
   }
-  private function _addtime($h, $m, $s)
+  private function _addtime($s)
   {
     $srem = $this->_mrem % (24 * 3600);
-    $x = $h * 3600 + $m * 60 + $s;
-    if($srem + $x > 24 * 3600)
+    if($srem + $s > 24 * 3600)
       {
-	$this->_adddays(floor(($srem + $x) / (24 * 3600)));
-	$x = ($x + $srem) % (24 * 3600) - $srem;
+	$this->_adddays(floor(($srem + $s) / (24 * 3600)));
+	$s = ($s + $srem) % (24 * 3600) - $srem;
       }
-    $this->_mrem += $x;
+    $this->_mrem += $s;
   }
   private function _submonths($m)
   {
@@ -293,19 +294,18 @@ class PersianDateTime extends BaseDateTime {
 	$this->_mrem += ($mths[$this->_month] - ($d - $sd) - $sd) * 24 * 3600;
       }
   }
-  private function _subtime($h, $m, $s)
+  private function _subtime($s)
   {
     $srem = $this->_mrem % (24 * 3600);
-    $x = $h * 3600 + $m * 60 + $s;
-    if($x - $srem > 0)
+    if($s - $srem > 0)
       {
-	$this->_subdays($tmp = ceil(($x - $srem) / (24 * 3600)));
-	if($tmp * 24 * 3600 > $x - $srem)
-	  $x = ($x % (24 * 3600)) - (24 * 3600);
+	$this->_subdays($tmp = ceil(($s - $srem) / (24 * 3600)));
+	if($tmp * 24 * 3600 > $s - $srem)
+	  $s = ($s % (24 * 3600)) - (24 * 3600);
 	else
-	  $x = $x % (24 * 3600);
+	  $s = $s % (24 * 3600);
       }
-    $this->_mrem -= $x;
+    $this->_mrem -= $s;
   }
   /*
    * static methods
