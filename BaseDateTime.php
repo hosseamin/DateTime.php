@@ -68,6 +68,11 @@ abstract class BaseDateTime {
   abstract public function setTime($hour, $minute, $second = 0);
   abstract public function setTimestamp($us);
   abstract public function sub($interval);
+  // similar to (get/set)Timestamp but it's starts from zero 
+  // and measurements are in days
+  abstract public function setTimeInDays($d);
+  abstract public function getTimeInDays();
+
   /*
    * internal abstract methods
    */
@@ -79,11 +84,11 @@ abstract class BaseDateTime {
   abstract public function getMinutes();
   abstract public function getSeconds();
   abstract public function getDay();
-  abstract public function isLeapYear();
+  abstract public function isLeapYear($y = NULL);
   // gets value represents days length
   // if $m is null returns currect month length
   abstract public function getMonthLength($m = NULL);
-
+  
   public static function createFromFormat($format, $time, $timezone = NULL)
   {
     
@@ -156,7 +161,7 @@ abstract class BaseDateTime {
       return false;
     $y = intval($res[0], 10);
     if($y < 100)
-      $y = ($this->CENTURY * 100) + $y;
+      $y = ($this->CENTURY - 1) * 100 + $y;
     $m = intval($res[1], 10);
     $d = intval($res[2], 10);
     if(!($d > 0))
