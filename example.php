@@ -17,14 +17,17 @@
  */
 require_once(__DIR__.'/PersianDateTime.php');
 require_once(__DIR__.'/IslamicTabularDateTime.php');
+require_once(__DIR__.'/GregorianDateTime.php');
 
 header("content-type: text/plain;charset=utf8");
 $tz = new DateTimeZone("Asia/Tehran");
 $t = time();
 $pd = new PersianDateTime("now", $tz);
 $id = new IslamicTabularDateTime("now", $tz);
-$gd = new DateTime("now", $tz);
+$gd = new GregorianDateTime("now", $tz);
+$dt = new DateTime("now", $tz);
 echo "Persian date ".$pd->format('Y-m-d H:i:s w')."\n";
 echo "Islamic date ".$id->format('Y-m-d H:i:s w')."\n";
 echo "Gregorian date ".$gd->format('Y-m-d H:i:s w')."\n";
+echo "php's DateTime ".$dt->format('Y-m-d H:i:s w')."\n";
 ?>
