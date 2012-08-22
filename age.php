@@ -20,55 +20,43 @@ require_once(__DIR__.'/IslamicTabularDateTime.php');
 require_once(__DIR__.'/GregorianDateTime.php');
 
 header("content-type: text/plain;charset=utf8");
+$tz = new DateTimeZone("Asia/Tehran");
 $calendar = '';
 if(isset($argv))
   {
-    if(sizeof($argv) >= 2)
-      $date_str = $argv[1];
+    if(sizeof($argv) < 2)
+      die("usage: date [calendar]\n");
+    $date_str = $argv[1];
     if(sizeof($argv) >= 3)
       $calendar = $argv[2];
   }
 elseif(isset($_GET))
   {
+    if(!$_GET['date'])
+      die("usage: GET date=<date>&calendar=<cal>\n");
     $date_str = $_GET['date'];
     if(isset($_GET['calendar']))
       $calendar = $_GET['calendar'];
     elseif(isset($_GET['cal']))
       $calendar = $_GET['cal'];
   }
-$tz = new DateTimeZone("Asia/Tehran");
-if(isset($date_str))
-  switch(strtolower($calendar))
-    {
-    case 'persian':
-      $sdate = new PersianDateTime($date_str, $tz);
-      break;
-    case 'islamic':
-      $sdate = new IslamicTabularDateTime($date_str, $tz);
-      break;
-    case 'gregorian':
-    default:
-      $sdate = new GregorianDateTime($date_str, $tz);
-      break;
-    }
-$pd = new PersianDateTime("now", $tz);
-$id = new IslamicTabularDateTime("now", $tz);
-$gd = new GregorianDateTime("now", $tz);
-$dt = new DateTime("now", $tz);
-if(isset($sdate))
+switch(strtolower($calendar))
   {
-    $time = $sdate->getTimestamp();
-    $pd->setTimestamp($time);
-    $id->setTimestamp($time);
-    $gd->setTimestamp($time);
-    $dt->setTimestamp($time);
+  case 'persian':
+    $bdate = new PersianDateTime($date_str, $tz);
+    $cdate = new PersianDateTime("now", $tz);
+    break;
+  case 'islamic':
+    $bdate = new IslamicTabularDateTime($date_str, $tz);
+    $cdate = new IslamicTabularDateTime("now", $tz);
+    break;
+  case 'gregorian':
+  default:
+    $bdate = new GregorianDateTime($date_str, $tz);
+    $cdate = new GregorianDateTime("now", $tz);
+    break;
   }
-echo "Persian date ".$pd->format('Y-m-d H:i:s w F '.
-				 '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
-echo "Islamic date ".$id->format('Y-m-d H:i:s w F '.
-				 '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
-echo "Gregorian date ".$gd->format('Y-m-d H:i:s w F '.
-				   '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
-echo "php's DateTime ".$dt->format('Y-m-d H:i:s w F '.
-				   '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
+$diff = $bdate->diff($cdate);
+echo $diff->format("%R %Y years, %M months, %D days").", ";
+echo $diff->format("%H Hours, %I Minutes, %S Seconds")."\n";
 ?>

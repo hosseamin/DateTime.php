@@ -42,15 +42,85 @@ abstract class RYMDateTime extends BaseDateTime {
 
   public function add($interval)
   {
+    if($interval->invert)
+      return $this->sub($interval);
     $this->_year += $interval->y;
     $this->_addmonth($interval->m);
     $this->_adddays($interval->d);
     $this->_addtime($interval->h * 3600 +
 		    $interval->i * 60 + $interval->s);
   }
-  public function diff($datetime2, $absolute = false)
+  public function diff($dt2, $absolute = false)
   {
-    
+    $i = new DateInterval("P0Y");
+    $dt1 = $this;
+  start_get_diff:
+    $yd = $dt2->getYear() - $dt1->getYear();
+    $md = $dt2->getMonth() - $dt1->getMonth();
+    $dd = $dt2->getDate() - $dt1->getDate();
+    $hd = $dt2->getHours() - $dt1->getHours();
+    $id = $dt2->getMinutes() - $dt1->getMinutes();
+    $sd = $dt2->getSeconds() - $dt1->getSeconds();
+
+    if(!isset($invert))
+      {
+	if($yd != 0)
+	  $invert = $yd;
+	elseif($md != 0)
+	  $invert = $md;
+	elseif($dd != 0)
+	  $invert = $md;
+	elseif($hd != 0)
+	  $invert = $hd;
+	elseif($id != 0)
+	  $invert = $id;
+	else
+	  $invert = $sd;
+	if($invert < 0)
+	  {
+	    $dt1 = $dt2;
+	    $dt2 = $this;
+	    goto start_get_diff;
+	  }
+      }
+    // eval
+    if($sd < 0)
+      {
+	--$id;
+	$sd = 60 + $sd;
+      }
+    if($id < 0)
+      {
+	--$hd;
+	$id = 60 + $id;
+      }
+    if($hd < 0)
+      {
+	--$dd;
+	$hd = 60 + $hd;
+      }
+    if($dd < 0)
+      {
+	//TODO::find which month to get
+	$mlen = 30;
+	--$md;
+	$dd = $mlen + $dd;
+      }
+    if($md < 0)
+      {
+	--$yd;
+	$md = 12 + $md;
+      }
+    $i->y = abs($yd);
+    $i->m = $md;
+    $i->d = $dd;
+    $i->h = $hd;
+    $i->i = $id;
+    $i->s = $sd;
+    $i->days = self::sec2days($dt2->getTimestamp() -
+				  $dt1->getTimestamp());
+    $i->invert = $invert >= 0 ? false : true;
+    return $i;
   }
   public static function getLastErrors()
   {
@@ -117,6 +187,8 @@ abstract class RYMDateTime extends BaseDateTime {
   }
   public function sub($interval)
   {
+    if($interval->invert)
+      return $this->add($interval);
     $this->_year -= $interval->y;
     $this->_submonths($interval->m);
     $this->_subdays($interval->d);
