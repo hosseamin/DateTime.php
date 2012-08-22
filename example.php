@@ -63,12 +63,12 @@ if(isset($sdate))
     $gd->setTimestamp($time);
     $dt->setTimestamp($time);
   }
-echo "Persian date ".$pd->format('Y-m-d H:i:s w F '.
+echo "Persian date ".$pd->format('Y-m-d H:i:s w '.
 				 '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
-echo "Islamic date ".$id->format('Y-m-d H:i:s w F '.
+echo "Islamic date ".$id->format('Y-m-d H:i:s w '.
 				 '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
-echo "Gregorian date ".$gd->format('Y-m-d H:i:s w F '.
+echo "Gregorian date ".$gd->format('Y-m-d H:i:s w '.
 				   '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
-echo "php's DateTime ".$dt->format('Y-m-d H:i:s w F '.
+echo "php's DateTime ".$dt->format('Y-m-d H:i:s w '.
 				   '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
 ?>
