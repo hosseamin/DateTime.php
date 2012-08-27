@@ -148,7 +148,7 @@ abstract class RYMDateTime extends BaseDateTime {
   }
   public function setDate($year, $month, $days)
   {
-    if($month >= 12 || $month <= 0)
+    if($month > 12 || $month <= 0)
       return false;
     $month -= 1;
     $isleap = $this->isLeapYear($year);

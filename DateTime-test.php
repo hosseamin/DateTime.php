@@ -19,19 +19,23 @@
 /*
  * DateTime test tools
  */
+require_once(__DIR__.'/PersianDateTime.php');
+require_once(__DIR__.'/IslamicTabularDateTime.php');
 require_once(__DIR__.'/GregorianDateTime.php');
 header("content-type: text/plain;charset=utf8");
 $tz = new DateTimeZone("Asia/Tehran");
-$pd = new GregorianDateTime("12-05-20 20:10:5", $tz);
+//$pd = new PersianDateTime("12-05-20 20:10:5", $tz);
+//$pd = new IslamicTabularDateTime("now", $tz);
+$pd = new GregorianDateTime("now", $tz);
 //$tinterval = new DateInterval("P3Y6M22DT6H");
-$tinterval = new DateInterval("P202142DT688H");
-sub_add_interval($tinterval, $pd);
+//$tinterval = new DateInterval("P202142DT688H");
+//sub_add_interval($tinterval, $pd);
 //$pd->setDate(1391, 5, 19);
 //$pd->setTime(11, 12, 10);
 //$pd->add($tinterval);
 //$pd->sub($tinterval);
-//$t = time();
-//$pd->setTimestamp($t);
+$t = time();
+$pd->setTimestamp($t);
 //$pdt = $pd->getTimestamp();
 //echo $t." ".($t - $pdt)."\n".$pdt."\n";
 echo $pd->format('Y-m-d H:i:s l');

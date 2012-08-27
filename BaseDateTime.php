@@ -55,7 +55,7 @@ abstract class BaseDateTime {
       $this->_tz = new DateTimeZone(date_default_timezone_get());
     else
       $this->_tz = $timezone;
-    if($time == "now")
+    if($time == "now" || $time == "")
       $this->setTimestamp(time());
     else
       $this->_parse_date($time);
@@ -177,7 +177,6 @@ abstract class BaseDateTime {
 	      $s = intval($res[5], 10);
 	  }
       }
-      
     $this->setDate($y, $m, $d);
     $this->setTime($h, $i, $s);
   }
