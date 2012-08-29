@@ -69,7 +69,7 @@ abstract class RYMDateTime extends BaseDateTime {
 	elseif($md != 0)
 	  $invert = $md;
 	elseif($dd != 0)
-	  $invert = $md;
+	  $invert = $dd;
 	elseif($hd != 0)
 	  $invert = $hd;
 	elseif($id != 0)
