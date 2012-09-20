@@ -43,7 +43,12 @@ abstract class RYMDateTime extends BaseDateTime {
   public function add($interval)
   {
     if($interval->invert)
-      return $this->sub($interval);
+      {
+	$interval->invert = false;
+	$r = $this->sub($interval);
+	$interval->invert = true;
+	return $r;
+      }
     $this->_year += $interval->y;
     $this->_addmonth($interval->m);
     $this->_adddays($interval->d);
@@ -97,7 +102,7 @@ abstract class RYMDateTime extends BaseDateTime {
     if($hd < 0)
       {
 	--$dd;
-	$hd = 60 + $hd;
+	$hd = 24 + $hd;
       }
     if($dd < 0)
       {
@@ -134,13 +139,21 @@ abstract class RYMDateTime extends BaseDateTime {
   {
     $isleap = $this->isLeapYear();
     $mths = $this->getMonthsArray($isleap);
-    $yrem = $this->monthTodays($this->_month, $mths) * 3600 * 24  + $this->_mrem;
+    $yrem = $this->monthTodays($this->_month, $mths) * 3600 * 24 +
+      $this->_mrem;
     if($this->_year < $this->UNIX_YEAR_SHIFT ||
        ($this->_year == $this->UNIX_YEAR_SHIFT && 
 	$this->UNIX_YREM_SHIFT > $yrem))
-      return false;
-    $ts = ($this->yearsRangeToDays($this->UNIX_YEAR_SHIFT, $this->_year)
-	   * 3600 * 24) + $yrem - $this->UNIX_YREM_SHIFT;
+      {
+	$ts = (-$this->yearsRangeToDays($this->_year,
+					$this->UNIX_YEAR_SHIFT) * 3600 * 24) +
+	  $yrem - $this->UNIX_YREM_SHIFT;
+      }
+    else
+      {
+	$ts = ($this->yearsRangeToDays($this->UNIX_YEAR_SHIFT, $this->_year)
+	       * 3600 * 24) + $yrem - $this->UNIX_YREM_SHIFT;
+      }
     $offset = $this->_getOffset_ts($ts);
     if($offset === false)
       return $ts;
@@ -182,13 +195,24 @@ abstract class RYMDateTime extends BaseDateTime {
     $this->_month = 0;
     $this->_mrem = 0;
     $us = $us + $this->UNIX_YREM_SHIFT;
-    $this->_adddays($this->sec2days($us));
-    $this->_mrem += $us % (3600 * 24);
+    /*
+      $this->_adddays($this->sec2days($us));
+      $this->_mrem += $us % (3600 * 24);
+    */
+    $interval = new DateInterval("P0D");
+    $interval->invert = $us < 0 ? true : false;
+    $interval->s = abs($us);
+    $this->add($interval);
   }
   public function sub($interval)
   {
     if($interval->invert)
-      return $this->add($interval);
+      {
+	$interval->invert = false;
+	$r = $this->add($interval);
+	$interval->invert = true;
+	return $r;
+      }
     $this->_year -= $interval->y;
     $this->_submonths($interval->m);
     $this->_subdays($interval->d);
@@ -330,6 +354,13 @@ abstract class RYMDateTime extends BaseDateTime {
     else
       {
 	--$this->_month;
+	if($this->_month < 0)
+	  {
+	    --$this->_year;
+	    $isleap = $this->isLeapYear();
+	    $mths = $this->getMonthsArray($isleap);
+	    $this->_month += 12;
+	  }
 	while($d > $mths[$this->_month])
 	  {
 	    $d -= $mths[$this->_month--];
