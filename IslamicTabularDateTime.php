@@ -23,7 +23,6 @@ class IslamicTabularDateTime extends RYMDateTime {
   protected $UNIX_YEAR_SHIFT =  1389;
   // (m9)266 * 24 * 3600 +  21 * 24 * 3600;
   protected $UNIX_YREM_SHIFT = 24796800;
-  // const UNIX_DAY_OF_WEEK = 5;
   protected $DAY_OF_WEEK_SHIFT = 2;
 
   const _30years = 10631; // 30 * _1year + 11

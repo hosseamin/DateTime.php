@@ -19,6 +19,7 @@
 /*
  * DateTime test tools
  */
+
 require_once(__DIR__.'/PersianDateTime.php');
 require_once(__DIR__.'/IslamicTabularDateTime.php');
 require_once(__DIR__.'/GregorianDateTime.php');
@@ -35,9 +36,10 @@ $pd = new GregorianDateTime("now", $tz);
 //$pd->add($tinterval);
 //$pd->sub($tinterval);
 $t = time();
+$t = -3.5 * 3600 - 325 * 24 * 3600;
 $pd->setTimestamp($t);
-//$pdt = $pd->getTimestamp();
-//echo $t." ".($t - $pdt)."\n".$pdt."\n";
+$pdt = $pd->getTimestamp();
+echo $t." ".($t - $pdt)."\n".$pdt."\n";
 echo $pd->format('Y-m-d H:i:s l');
 echo "\n";
 

@@ -22,7 +22,6 @@ class PersianDateTime extends RYMDateTime {
   /* Constants */
   protected $UNIX_YEAR_SHIFT = 1348;
   protected $UNIX_YREM_SHIFT = 24710400;
-  //const UNIX_DAY_OF_WEEK = 5; // 5 means پنج شنبه or Thu
   protected $DAY_OF_WEEK_SHIFT = 4;
   const _33years = 12053;
   protected $_1leapYear = 366;

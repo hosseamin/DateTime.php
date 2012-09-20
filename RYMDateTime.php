@@ -22,6 +22,7 @@ abstract class RYMDateTime extends BaseDateTime {
   /* Constants */
   protected $UNIX_YEAR_SHIFT;
   protected $UNIX_REM_YEAR_IN_SEC;
+  protected $UNIX_DAY_OF_WEEK;
   protected $DAY_OF_WEEK_SHIFT;
   protected $_1leapYear;
   protected $_1year;
@@ -181,7 +182,7 @@ abstract class RYMDateTime extends BaseDateTime {
   {
     if($hour >= 24 || $minute >= 60 || $second >= 60 ||
        $hour < 0 || $minute < 0 || $second < 0)
-      return false;;
+      return false;
     $ch = $this->sec2hours($this->_mrem);
     $cm = $this->sec2mins($this->_mrem);
     $cs = $this->sec2seconds($this->_mrem);
@@ -270,8 +271,13 @@ abstract class RYMDateTime extends BaseDateTime {
     $d = $this->yearsRangeToDays(0, $this->_year) + 
       $this->monthToDays($this->_month) + $this->sec2days($this->_mrem)
       + $this->DAY_OF_WEEK_SHIFT;
-    
     return $d % 7;
+    /*
+      there is problem when applying following code
+      it return day of week of UTC only
+    return ($this->sec2days($this->getTimestamp()) + 
+	    $this->UNIX_DAY_OF_WEEK) % 7;
+    */
   }  
   private function _getOffset_ts($ts)
   {
@@ -416,18 +422,26 @@ abstract class RYMDateTime extends BaseDateTime {
   }
   public static function sec2days($s)
   {
+    if($s < 0)
+      return ceil($s / (3600 * 24));
     return floor($s / (3600 * 24));
   }
   public static function sec2hours($s)
   {
+    if($s < 0)
+      return ceil(($s % (3600 * 24)/3600));
     return floor(($s % (3600 * 24)/3600));
   }
   public static function sec2mins($s)
   {
+    if($s < 0)
+      return ceil(($s % (3600))/60);
     return floor(($s % (3600))/60);
   }
   public static function sec2seconds($s)
   {
+    if($s < 0)
+      return ceil(($s % (60)));
     return floor(($s % (60)));
   }
 }
