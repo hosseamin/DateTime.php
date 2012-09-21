@@ -243,7 +243,7 @@ abstract class BaseDateTime {
 	// not implemented
 	break;
       case 'Y':
-	return $this->getYear();
+	return self::format_fixlen_prefix($this->getYear(), '0', 4);
 	break;
       case 'y':
 	return $this->getYear() % 100;

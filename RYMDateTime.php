@@ -158,6 +158,7 @@ abstract class RYMDateTime extends BaseDateTime {
     $offset = $this->_getOffset_ts($ts);
     if($offset === false)
       return $ts;
+    $offset = $this->_getOffset_ts($ts - $offset);
     return $ts - $offset;
   }
   public function setDate($year, $month, $days)

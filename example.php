@@ -64,11 +64,15 @@ if(isset($sdate))
     $dt->setTimestamp($time);
   }
 echo "Persian date ".$pd->format('Y-m-d H:i:s w '.
-				 '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
+				 '\m\o\n\t\h-\l\e\n\g\t\h: t').
+" tzoffset ".($pd->getOffset() / 3600)."\n";
 echo "Islamic date ".$id->format('Y-m-d H:i:s w '.
-				 '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
+				 '\m\o\n\t\h-\l\e\n\g\t\h: t').
+" tzoffset ".($id->getOffset() / 3600)."\n";
 echo "Gregorian date ".$gd->format('Y-m-d H:i:s w '.
-				   '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
+				   '\m\o\n\t\h-\l\e\n\g\t\h: t').
+" tzoffset ".($gd->getOffset() / 3600)."\n";
 echo "php's DateTime ".$dt->format('Y-m-d H:i:s w '.
-				   '\m\o\n\t\h-\l\e\n\g\t\h: t')."\n";
+				   '\m\o\n\t\h-\l\e\n\g\t\h: t').
+" tzoffset ".($dt->getOffset() / 3600)."\n";
 ?>
