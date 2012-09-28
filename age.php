@@ -32,7 +32,7 @@ if(isset($argv))
   }
 elseif(isset($_GET))
   {
-    if(!$_GET['date'])
+    if(!isset($_GET['date']))
       die("usage: GET date=<date>&calendar=<cal>\n");
     $date_str = $_GET['date'];
     if(isset($_GET['calendar']))
