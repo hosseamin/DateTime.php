@@ -23,6 +23,7 @@ class GregorianDateTime extends RYMDateTime {
   protected $UNIX_YEAR_SHIFT = 1970;
   protected $UNIX_YREM_SHIFT = 0;
   protected $DAY_OF_WEEK_SHIFT = 6;
+  protected $ISO_START_DOW = 1;
 
   const _400years = 146097;
   protected $_1leapYear = 366;

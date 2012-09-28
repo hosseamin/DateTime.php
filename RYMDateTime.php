@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 require_once(__DIR__.'/BaseDateTime.php');
 // Regular Year Month Date Time
 abstract class RYMDateTime extends BaseDateTime {
@@ -26,6 +27,7 @@ abstract class RYMDateTime extends BaseDateTime {
   protected $DAY_OF_WEEK_SHIFT;
   protected $_1leapYear;
   protected $_1year;
+  protected $ISO_START_DOW;
 
   /*
    * variables are year number, month number and the reminder of 
@@ -177,7 +179,13 @@ abstract class RYMDateTime extends BaseDateTime {
   }
   public function setISODate($year ,$week, $day = 1)
   {
-    
+    if($week < 1 && $day < 1)
+      return false;
+    $this->_year = $year;
+    $this->_month = 0;
+    $this->_mrem = $this->_mrem % (3600 * 24);
+    $this->_adddays(($week - 1) * 7 + ($day - 1) - $this->getDay() + 
+		    $this->ISO_START_DOW);
   }
   public function setTime($hour, $minute, $second = 0)
   {

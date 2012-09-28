@@ -24,6 +24,7 @@ class IslamicTabularDateTime extends RYMDateTime {
   // (m9)266 * 24 * 3600 +  21 * 24 * 3600;
   protected $UNIX_YREM_SHIFT = 24796800;
   protected $DAY_OF_WEEK_SHIFT = 2;
+  protected $ISO_START_DOW = 0;
 
   const _30years = 10631; // 30 * _1year + 11
   protected $_1leapYear = 355;

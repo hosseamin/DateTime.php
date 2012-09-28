@@ -265,7 +265,8 @@ abstract class BaseDateTime {
 	return $this->getHours();
 	break;
       case 'h':
-	return self::format_fixlen_prefix(($this->getHours() % 12) + 1, '0', 2);
+	return self::format_fixlen_prefix(($this->getHours() % 12) + 1,
+					  '0', 2);
 	break;
       case 'H':
 	return self::format_fixlen_prefix($this->getHours(), '0', 2);

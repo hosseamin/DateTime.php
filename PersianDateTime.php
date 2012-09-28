@@ -23,6 +23,8 @@ class PersianDateTime extends RYMDateTime {
   protected $UNIX_YEAR_SHIFT = 1348;
   protected $UNIX_YREM_SHIFT = 24710400;
   protected $DAY_OF_WEEK_SHIFT = 4;
+  protected $ISO_START_DOW = 0;
+  
   const _33years = 12053;
   protected $_1leapYear = 366;
   protected $_1year = 365;
