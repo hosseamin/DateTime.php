@@ -57,8 +57,13 @@ abstract class BaseDateTime {
       $this->_tz = $timezone;
     if($time == "now" || $time == "")
       $this->setTimestamp(time());
-    else
-      $this->_parse_date($time);
+    elseif(!$this->_parse_date($time))
+      if(!$this->_parse_time($time))
+	if(!$this->_parse_date_time($time))
+	  if(!$this->_parse_date_time_nonstrict($time))
+	    throw new Exception("Can't parse string `$time' as".
+				" date and/or time");
+    
   }
   abstract public function add($interval);
   abstract public function diff($datetime2, $absolute = false);
@@ -151,13 +156,285 @@ abstract class BaseDateTime {
   {
     // ??
   }
-
-  private function _parse_date($s)
+  private function _now()
+  {
+    $this->setTimestamp(time());
+  }
+  private function _find_timezone($s)
+  {
+    $tz_ids = DateTimeZone::listIdentifiers();
+    if(array_search($s, $tz_ids) !== false)
+      return new DateTimezone($s);
+    $tz_abbr = DateTimeZone::listAbbreviations();
+    $tz_abbr_keys = array_keys($tz_abbr);
+    if(($r = array_search(strtolower($s), $tz_abbr_keys)) !== false)
+      {
+	$tz = $tz_abbr[$tz_abbr_keys[$r]];
+	if(sizeof($tz > 0))
+	  return new DateTimeZone($tz[0]['timezone_id']);
+      }
+    return null;
+  }
+  private function _parse_time($str)
+  {
+    // hh
+    $pttrn = '/^(\d{1,2}) ?(.*)/';
+    $pttrn2 = '/^[tT]?(\d{1,2})[.:](\d{1,2}) ?(.*)/';
+    $pttrn3 = '/^[tT]?(\d{1,2})[.:](\d{1,2})[.:](\d{1,2}) ?(.*)/';
+    $pttrn4 = '/^[tT]?(\d{4})$/';
+    $pttrn5 = '/^[tT]?(\d{6})$/';
+    if(preg_match($pttrn, $str, $match) == 1)
+      {
+	$m = array_search($match[2], $this->MERIDIEM_STATUS_L);
+	if($m === false)
+	  $m = array_search($match[2], $this->MERIDIEM_STATUS_U);
+	if($m !== false)
+	  {
+	    $h = intval($match[1], 10);
+	    if($h > 12)
+	      return false;
+	    $h = ($h % 12) + $m * 12;
+	    $this->_now();
+	    $this->setTime($h, 0, 0);
+	    return true;
+	  }
+      }
+    if(preg_match($pttrn2, $str, $match) == 1)
+      {
+	if($match[3] == '')
+	  {
+	    $h = intval($match[1], 10);
+	    $i = intval($match[2], 10);
+	    if($h > 23 && $i > 59)
+	      return false;
+	    $this->_now();
+	    $this->setTime($h, $i, 0);
+	    return true;
+	  }
+	$m = array_search($match[3], $this->MERIDIEM_STATUS_L);
+	if($m === false)
+	  $m = array_search($match[3], $this->MERIDIEM_STATUS_U);
+	if($m !== false)
+	  {
+	    $h = intval($match[1], 10);
+	    $i = intval($match[2], 10);
+	    if($h > 12 && $i > 59)
+	      return false;
+	    $h = ($h % 12) + $m * 12;
+	    $this->_now();
+	    $this->setTime($h, $i, 0);
+	    return true;
+	  }
+      }
+    if(preg_match($pttrn3, $str, $match) == 1)
+      {
+	if($match[4] == '')
+	  {
+	    $h = intval($match[1], 10);
+	    $i = intval($match[2], 10);
+	    $s = intval($match[3], 10);
+	    if($h > 23 && $i > 59 && $s > 59)
+	      return false;
+	    $this->_now();
+	    $this->setTime($h, $i, $s);
+	    return true;
+	  }
+	$m = array_search($match[4], $this->MERIDIEM_STATUS_L);
+	if($m === false)
+	  $m = array_search($match[4], $this->MERIDIEM_STATUS_U);
+	if($m !== false)
+	  {
+	    $h = intval($match[1], 10);
+	    $i = intval($match[2], 10);
+	    $s = intval($match[3], 10);
+	    if($h > 12 && $i > 59 && $s > 59)
+	      return false;
+	    $h = ($h % 12) + $m * 12;
+	    $this->_now();
+	    $this->setTime($h, $i, $s);
+	    return true;
+	  }
+	$tz = $this->_find_timezone($match[4]);
+	if($tz !== null)
+	  {
+	    $h = intval($match[1], 10);
+	    $i = intval($match[2], 10);
+	    $s = intval($match[3], 10);
+	    if($h > 23 && $i > 59 && $s > 59)
+	      return false;
+	    $this->setTimeZone($tz);
+	    $this->_now();
+	    $this->setTime($h, $i, $s);
+	    return true;
+	  }
+      }
+    if(preg_match($pttrn4, $str, $match) == 1)
+      {
+	$h = intval(substr($match[1], 0, 2), 10);
+	$i = intval(substr($match[1], 2, 2), 10);
+	if($h > 23 && $i > 59)
+	  return false;
+	$this->_now();
+	$this->setTime($h, $i, 0);
+	return true;
+      }
+    if(preg_match($pttrn5, $str, $match) == 1)
+      {
+	$h = intval(substr($match[1], 0, 2), 10);
+	$i = intval(substr($match[1], 2, 2), 10);
+	$s = intval(substr($match[1], 4, 2), 10);
+	if($h > 23 && $i > 59 && $s > 59)
+	  return false;
+	$this->_now();
+	$this->setTime($h, $i, $s);
+	return true;
+      }
+    if(($tz = $this->_find_timezone($str)) !== null)
+      {
+	$this->setTimeZone($tz);
+	$this->_now();
+	return true;
+      }
+  }
+  private function _parse_date($str)
+  {
+    $pttrn1 = '/^(\d{8})$/';
+    $pttrn2 = '/^(\d{2})[\/-](\d{2})[\/-](\d{2})$/';
+    $pttrn3 = '/^(\d{4})[\/-](\d{2})[\/-](\d{2})$/';
+    $pttrn4 = '/^([+-])(\d{4})-(\d{2})-(\d{2})/';
+    $pttrn5 = '/^(\d{4})-(\d{1,2})/';
+    $pttrn6 = '/^(\d{1,2})[\t .-]*([^\d]+)(\d{4})|([^\d]*)(\d{4})/';
+    $pttrn7 = '/^(\d{4})[\t .-]*([^\d]+)|([^-]+)-(\d{1,2})-(\d{4})/';
+    if(preg_match($pttrn1, $str, $match) == 1)
+      {
+	$y = intval(substr($match[1], 0, 4), 10);
+	$m = intval(substr($match[1], 4, 2), 10);
+	$d = intval(substr($match[1], 6, 2), 10);
+	return $this->setDate($y, $m, $d);
+      }
+    if(preg_match($pttrn2, $str, $match) == 1 || 
+       preg_match($pttrn3, $str, $match) == 1)
+      {
+	$y = intval($match[1], 10);
+	$m = intval($match[2], 10);
+	$d = intval($match[3], 10);
+	if(strlen($match[1]) == 2)
+	  $y += ($this->CENTURY - 1) * 100;
+	return $this->setDate($y, $m, $d);
+      }
+    if(preg_match($pttrn4, $str, $match) == 1)
+      {
+	$this->_now();
+	$i = new DateInterval('P0D');
+	$i->invert = ($match[1] == '-') ? true : false;
+	$i->y = intval($match[2], 10);
+	$i->m = intval($match[3], 10);
+	$i->d = intval($match[4], 10);
+	$this->add($i);
+	return true;
+      }
+    if(preg_match($pttrn5, $str, $match) == 1)
+      return $this->setDate(intval($match[1], 10), intval($match[2], 10), 1);
+    if(preg_match($pttrn6, $str, $match) == 1)
+      {
+	$m = -1;
+	if(sizeof($match) == 4)
+	  $mname = $match[2];
+	else
+	  $mname = $match[4];
+	foreach($this->MONTH_NAMES as $key => $needle)
+	  {
+	    if(stripos($mname, $needle) === 0)
+	      {
+		$m = $key;
+		break;
+	      }
+	  }
+	if($m == -1)
+	  foreach($this->MONTH_SHORT_NAMES as $key => $needle)
+	    {
+	      if(stripos($mname, $needle) === 0)
+		{
+		  $m = $key;
+		  break;
+		}
+	    }
+	if($m != -1)
+	  {
+	    if(sizeof($match) == 4)
+	      return $this->setDate(intval($match[3], 10), $m + 1,
+				    intval($match[1], 10));
+	    return $this->setDate(intval($match[5], 10), $m + 1, 1);
+	      
+	  }
+      }
+    if(preg_match($pttrn7, $str, $match) == 1)
+      {
+	if(sizeof($match) == 3)
+	  $mname = strtolower($match[2]);
+	else
+	  $mname = strtolower($match[3]);
+	if(($m = array_search($mname, array_map('strtolower',
+					$this->MONTH_NAMES))) === false)
+	  $m = array_search($mname, array_map('strtolower',
+					      $this->MONTH_SHORT_NAMES));
+	if($m !== false)
+	  {
+	    if(sizeof($match) == 3)
+	      return $this->setDate(intval($match[1], 10), $m + 1, 1);
+	    return $this->setDate(intval($match[5], 10), $m + 1,
+				  intval($match[4], 10));
+	  }
+      }
+    return false;
+  }
+  private function _parse_date_time($str)
+  {
+    $pttrn1 = '/^(\d{1,2})\/([^\/]+)\/(\d{4}):(\d{2}):(\d{2}):(\d{2}) '.
+      '(GMT)?([+-])(\d{2}):?(\d{2})/';
+    $pttrn2 = '/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})/';
+    $pttrn3 = '/^\@([+-]?\d+)/';
+    
+    if(preg_match($pttrn1, $str, $match) == 1)
+      {
+	$mname = strtolower($match[2]);
+	if(($m = array_search($mname, array_map('strtolower',
+					$this->MONTH_NAMES))) === false)
+	  $m = array_search($mname, array_map('strtolower',
+					      $this->MONTH_SHORT_NAMES));
+	if($m !== false)
+	  {
+	    if($this->setDate(intval($match[3], 10), $m + 1,
+			      intval($match[1], 10)) === false)
+	      return false;
+	    $this->setTime(intval($match[4], 10), intval($match[5]), 
+			   intval($match[6], 10));
+	    return true;
+	  }
+      }
+    if(preg_match($pttrn2, $str, $match) == 1)
+      {
+	if($this->setDate(intval($match[1], 10), intval($match[2], 10),
+			  intval($match[3], 10)) === false)
+	  return false;
+	$this->setTime(intval($match[4], 10), intval($match[5], 10),
+		       intval($match[6], 10));
+	return true;
+      }
+    if(preg_match($pttrn3, $str, $match) == 1)
+      {
+	$this->setTimestamp(intval($match[1], 10));
+	return true;
+      }
+    return false;
+  }
+  private function _parse_date_time_nonstrict($str)
   {
     $pttrn = '/[^0-9]/';
-    $res = preg_split($pttrn, $s);
+    $res = preg_split($pttrn, $str);
     $rlen = sizeof($res);
-    if($rlen < 3)
+    if($rlen < 3 || !is_numeric($res[0]) ||
+       !is_numeric($res[1]) || !is_numeric($res[2]))
       return false;
     $y = intval($res[0], 10);
     if($y < 100)
@@ -177,8 +454,10 @@ abstract class BaseDateTime {
 	      $s = intval($res[5], 10);
 	  }
       }
-    $this->setDate($y, $m, $d);
+    if($this->setDate($y, $m, $d) === false)
+      return false;
     $this->setTime($h, $i, $s);
+    return true;
   }
   /*
    * format subroutines

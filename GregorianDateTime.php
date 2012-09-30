@@ -64,7 +64,7 @@ class GregorianDateTime extends RYMDateTime {
     $this->MONTH_NAMES =& self::$CONST_MONTH_NAMES;
     $this->MONTH_SHORT_NAMES =& self::$CONST_MONTH_SHORT_NAMES;
     $this->MERIDIEM_STATUS_L =& self::$CONST_MERIDIEM_STATUS_L;
-    $this->MERIDIEM_STATUS_U =& self::$CONST_MERIDIEM_STATUS_L;
+    $this->MERIDIEM_STATUS_U =& self::$CONST_MERIDIEM_STATUS_U;
     
     parent::__construct($time, $timezone);
   }
