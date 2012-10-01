@@ -5,6 +5,12 @@ where have Year, Month, Day, DayOfWeek.
 Interface uses DateInterval, DateTimeZone Classes.
 It's similar to php's DateTime Class.
 
+-BaseDateTime class is abstract constrol's parsing, formating or anything where
+not related to any specific calendar, it require some variables like textual
+month names and week names where will be defined in higher level classes.
+-RYMDateTime compunds calendar's commonalities, it is 12 month calendars with
+7 days week, Gregorian | Persian | Islamic calendars are example use of it.
+
  Copyright (C) 2012  Hossein Amin
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
