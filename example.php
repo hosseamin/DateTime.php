@@ -21,6 +21,8 @@ require_once(__DIR__.'/GregorianDateTime.php');
 
 header("content-type: text/plain;charset=utf8");
 $calendar = '';
+$tzname = 'Asia/Tehran';
+
 if(isset($argv))
   {
     if(sizeof($argv) >= 2)
@@ -38,21 +40,26 @@ elseif(isset($_GET))
     elseif(isset($_GET['cal']))
       $calendar = $_GET['cal'];
   }
-$tz = new DateTimeZone("Asia/Tehran");
-if(isset($date_str))
-  switch(strtolower($calendar))
-    {
-    case 'persian':
-      $sdate = new PersianDateTime($date_str, $tz);
-      break;
-    case 'islamic':
-      $sdate = new IslamicTabularDateTime($date_str, $tz);
-      break;
-    case 'gregorian':
-    default:
-      $sdate = new GregorianDateTime($date_str, $tz);
-      break;
-    }
+$tz = new DateTimeZone($tzname);
+if(!isset($date_str))
+  $date_str = 'now';
+switch(strtolower($calendar))
+  {
+  case 'persian':
+    $sdate = new PersianDateTime($date_str, $tz);
+    break;
+  case 'islamic':
+    $sdate = new IslamicTabularDateTime($date_str, $tz);
+    break;
+  case 'phpdt':
+    $sdate = new DateTime($date_str, $tz);
+    break;
+  case 'gregorian':
+  default:
+    $sdate = new GregorianDateTime($date_str, $tz);
+    break;
+  }
+/*
 $pd = new PersianDateTime("now", $tz);
 $id = new IslamicTabularDateTime("now", $tz);
 $gd = new GregorianDateTime("now", $tz);
@@ -64,6 +71,15 @@ if(isset($sdate))
     $id->setTimestamp($time);
     $gd->setTimestamp($time);
     $dt->setTimestamp($time);
+  }
+*/
+if(isset($sdate))
+  {
+    $pd = $sdate->asDateTime('PersianDateTime');
+    $id = $sdate->asDateTime('IslamicTabularDateTime');
+    $gd = $sdate->asDateTime('GregorianDateTime');
+    $dt = new DateTime('now', $tz);
+    $dt->setTimestamp($sdate->getTimestamp());
   }
 echo "Persian date ".$pd->format('Y-m-d H:i:s w '.
 				 '\m\o\n\t\h-\l\e\n\g\t\h: t').

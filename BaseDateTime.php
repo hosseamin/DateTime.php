@@ -48,7 +48,6 @@ abstract class BaseDateTime {
   protected $MERIDIEM_STATUS_U;
   
   private $_tz;
-  
   function __construct($time = "now", $timezone = NULL)
   {
     if($timezone === NULL)
@@ -93,7 +92,24 @@ abstract class BaseDateTime {
   // gets value represents days length
   // if $m is null returns currect month length
   abstract public function getMonthLength($m = NULL);
-  
+  public function asDateTime($classname)
+  {
+    if(!class_exists($classname))
+      throw new Exception("Class ".$classname." does not exists");
+    if(!$this->_is_class_inherited($classname, 'BaseDateTime'))
+      throw new Exception("Class ".$classname." does not inherited".
+			  " BaseDateTime");
+    $rc = new ReflectionClass($classname);
+    return $rc->newInstance('@'.$this->getTimestamp(), $this->getTimezone());
+  }
+  private function _is_class_inherited($c, $pcn)
+  {
+    $ia = class_parents($c);
+    foreach($ia as $val)
+      if($pcn == $val)
+	return true;
+    return false;
+  }
   public static function createFromFormat($format, $time, $timezone = NULL)
   {
     
@@ -146,6 +162,8 @@ abstract class BaseDateTime {
   public function getOffset()
   {
     // simple method
+    if(!$this->_tz)
+      return 0;
     $ts = $this->getTimestamp();
     $trans = $this->_tz->getTransitions($ts, $ts);
     if(sizeof($trans) > 0)
@@ -362,7 +380,7 @@ abstract class BaseDateTime {
 	if($m != -1)
 	  {
 	    if(sizeof($match) == 4)
-	      return $this->setDate(intval($match[3], 10), $m + 1,
+		return $this->setDate(intval($match[3], 10), $m + 1,
 				    intval($match[1], 10));
 	    return $this->setDate(intval($match[5], 10), $m + 1, 1);
 	      
@@ -409,6 +427,18 @@ abstract class BaseDateTime {
 	      return false;
 	    $this->setTime(intval($match[4], 10), intval($match[5]), 
 			   intval($match[6], 10));
+	    /*
+	      not sure
+	    $tzc = intval($match[9], 10) * 3600;
+	    if(is_numeric($match[10]))
+	      $tzc += intval($match[10], 10) * 60;
+	    if($match[8] == '-')
+	      $tzc *= -1;
+	    $this->setOffsetCorrection($tzc);
+	    // maybe wrong setting the to null
+	    if($match[7] == 'GMT')
+	      $this->setTimeZone(NULL);
+	    */
 	    return true;
 	  }
       }

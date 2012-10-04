@@ -176,6 +176,7 @@ abstract class RYMDateTime extends BaseDateTime {
     $this->_month = $month;
     $cd = $this->sec2days($this->_mrem);
     $this->_mrem += (($days-1) - $cd) * 3600 * 24;
+    return true;
   }
   public function setISODate($year ,$week, $day = 1)
   {
@@ -239,6 +240,7 @@ abstract class RYMDateTime extends BaseDateTime {
   }
   public function getTimeInDays()
   {
+    // impl stoped
     // how to find timezone offset
     return $this->yearsRangeToDays($this->UNIX_YEAR_SHIFT, $this->_year) +
       $this->monthToDays($this->_month) + $this->sec2days($this->_mrem);
@@ -290,7 +292,9 @@ abstract class RYMDateTime extends BaseDateTime {
   }  
   private function _getOffset_ts($ts)
   {
-    $trans = $this->getTimezone()->getTransitions($ts, $ts);
+    if(!($tz = $this->getTimezone()))
+       return 0;
+    $trans = $tz->getTransitions($ts, $ts);
     if(sizeof($trans) > 0)
       return $trans[0]['offset'];
     return false;
