@@ -64,6 +64,7 @@ abstract class BaseDateTime {
 				" date and/or time");
     
   }
+  abstract public static function getCalendarName();
   abstract public function add($interval);
   abstract public function diff($datetime2, $absolute = false);
   abstract public function getTimestamp();

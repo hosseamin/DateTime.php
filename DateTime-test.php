@@ -20,9 +20,9 @@
  * DateTime test tools
  */
 
-require_once(__DIR__.'/PersianDateTime.php');
-require_once(__DIR__.'/IslamicTabularDateTime.php');
-require_once(__DIR__.'/GregorianDateTime.php');
+require_once('PersianDateTime.php');
+require_once('IslamicTabularDateTime.php');
+require_once('GregorianDateTime.php');
 header("content-type: text/plain;charset=utf8");
 $tz = new DateTimeZone("Asia/Tehran");
 //$pd = new PersianDateTime("12-05-20 20:10:5", $tz);
@@ -35,13 +35,16 @@ $pd = new GregorianDateTime("now", $tz);
 //$pd->setTime(11, 12, 10);
 //$pd->add($tinterval);
 //$pd->sub($tinterval);
-$t = time();
-$t = -3.5 * 3600 - 325 * 24 * 3600;
-$pd->setTimestamp($t);
-$pdt = $pd->getTimestamp();
-echo $t." ".($t - $pdt)."\n".$pdt."\n";
-echo $pd->format('Y-m-d H:i:s l');
-echo "\n";
+//$t = time();
+//$t = -3.5 * 3600 - 325 * 24 * 3600;
+//$pd->setTimestamp($t);
+//$pdt = $pd->getTimestamp();
+//echo $t." ".($t - $pdt)."\n".$pdt."\n";
+$dt = new DateTime("1", $tz);
+//$pd->setISODate(2003, 66);
+//$dt->setISODate(2003, 66);
+//echo $pd->format('Y-m-d H:i:s l')."\n";
+echo $dt->format('Y-m-d H:i:s l')."\n";
 
 function add_sub_interval($interval, $dt)
 {

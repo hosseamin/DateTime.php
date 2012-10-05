@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once(__DIR__.'/RYMDateTime.php');
+require_once('RYMDateTime.php');
 
 class IslamicTabularDateTime extends RYMDateTime {
 
@@ -71,6 +71,10 @@ class IslamicTabularDateTime extends RYMDateTime {
     $this->MERIDIEM_STATUS_U =& self::$CONST_MERIDIEM_STATUS_L;
 
     parent::__construct($time, $timezone);
+  }
+  public static function getCalendarName()
+  {
+    return 'islamic tabular';
   }
   public function isLeapYear($y = NULL)
   {

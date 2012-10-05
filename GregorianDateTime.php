@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once(__DIR__.'/BaseDateTime.php');
+require_once('BaseDateTime.php');
 
 class GregorianDateTime extends RYMDateTime {
 
@@ -67,6 +67,10 @@ class GregorianDateTime extends RYMDateTime {
     $this->MERIDIEM_STATUS_U =& self::$CONST_MERIDIEM_STATUS_U;
     
     parent::__construct($time, $timezone);
+  }
+  public static function getCalendarName()
+  {
+    return 'gregorian';
   }
   public function isLeapYear($y = NULL)
   {

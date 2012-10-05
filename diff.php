@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once(__DIR__.'/PersianDateTime.php');
-require_once(__DIR__.'/IslamicTabularDateTime.php');
-require_once(__DIR__.'/GregorianDateTime.php');
+require_once('PersianDateTime.php');
+require_once('IslamicTabularDateTime.php');
+require_once('GregorianDateTime.php');
 
 header("content-type: text/plain;charset=utf8");
 $tz = new DateTimeZone("Asia/Tehran");
