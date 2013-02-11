@@ -125,7 +125,8 @@ abstract class RYMDateTime extends BaseDateTime {
     $i->h = $hd;
     $i->i = $id;
     $i->s = $sd;
-    $i->days = self::sec2days($dt2->getTimestamp() -
+    if(property_exists($i, 'days'))
+      $i->days = self::sec2days($dt2->getTimestamp() -
 				  $dt1->getTimestamp());
     $i->invert = $invert >= 0 ? false : true;
     return $i;
