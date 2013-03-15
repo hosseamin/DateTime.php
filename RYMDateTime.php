@@ -421,6 +421,7 @@ abstract class RYMDateTime extends BaseDateTime {
   {
     if($ey < $y)
       return null;
+    $d = 0;
     while($y < $ey)
       {
 	if($this->isLeapYear($y))
