@@ -105,7 +105,6 @@ class IslamicTabularDateTime extends RYMDateTime {
     return array(30, 29, 30, 29, 30, 29, 30, 29,
 		 30, 29, 30, 29);
   }
-  /*
   protected function yearsRangeToDays($y, $ey)
   {
     if($ey < $y)
@@ -126,6 +125,5 @@ class IslamicTabularDateTime extends RYMDateTime {
       }
     return $d;
   }
-  */
 }
 ?>
