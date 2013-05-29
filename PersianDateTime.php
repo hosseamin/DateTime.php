@@ -103,25 +103,5 @@ class PersianDateTime extends RYMDateTime {
     return array(31, 31, 31, 31, 31, 31,
 		 30, 30, 30, 30, 30, 29);
   }
-  protected function yearsRangeToDays($y, $ey)
-  {
-    if($ey < $y)
-      return null;
-    $delta = $ey - $y;
-    $d = floor($delta / 33) * self::_33years;
-    $y += floor($delta / 33) * 33;
-    while($y < $ey)
-      {
-	if($this->isLeapYear($y))
-	  {
-	    $d += $this->_1leapYear;
-	  }else
-	  {
-	    $d += $this->_1year;
-	  }
-	++$y;
-      }
-    return $d;
-  }
 }
 ?>

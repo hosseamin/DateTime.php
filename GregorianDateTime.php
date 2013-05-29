@@ -90,25 +90,5 @@ class GregorianDateTime extends RYMDateTime {
     return array(31, 28, 31, 30, 31, 30,
 		 31, 31, 30, 31, 30, 31);
   }
-  protected function yearsRangeToDays($y, $ey)
-  {
-    if($ey < $y)
-      return null;
-    $delta = $ey - $y;
-    $d = floor($delta / 400) * self::_400years;
-    $y += floor($delta / 400) * 400;
-    while($y < $ey)
-      {
-	if($this->isLeapYear($y))
-	  {
-	    $d += $this->_1leapYear;
-	  }else
-	  {
-	    $d += $this->_1year;
-	  }
-	++$y;
-      }
-    return $d;
-  }
 }
 ?>
